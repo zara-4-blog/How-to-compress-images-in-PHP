@@ -1,0 +1,11 @@
+{
+  "name": "zara-4-blog/how-to-compress-images-in-php",
+  "description": "How to compress images in PHP",
+  "keywords": ["Zara 4", "Image Compression"],
+  "homepage": "https://blog.zara4.com/how-to-compress-images-in-php",
+  "license": "MIT",
+  "type": "project",
+  "require": {
+    "zara-4/php-sdk": "~1.2"
+  }
+}

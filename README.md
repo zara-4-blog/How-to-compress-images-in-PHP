@@ -1,1 +1,1 @@
-# How-to-compress-images-in-PHP
+# How to compress images in PHP
