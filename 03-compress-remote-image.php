@@ -1,5 +1,7 @@
 <?php
 
+require('vendor/autoload.php');
+
 // Replace with your API credentials
 // You can obtain your API credentials from https://zara4.com/account/api-clients/live-credentials
 // For the purpose of testing you can also use sandbox test credentials https://zara4.com/account/api-clients/test-credentials
@@ -19,6 +21,8 @@ try {
   $originalImage  = new Zara4\API\ImageProcessing\RemoteImageRequest("https://github.com/zara-4-blog/how-to-compress-images-in-php/raw/master/img/001.jpg");
   $processedImage = $apiClient->processImage($originalImage);
   $apiClient->downloadProcessedImage($processedImage, "compressed.jpg");
+
+  echo "Percentage Saving: " . number_format($processedImage->percentageSaving(), 2) . "%\n";
 }
 
 // Out of quota
