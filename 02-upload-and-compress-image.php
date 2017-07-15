@@ -28,7 +28,7 @@ use Zara4\API\ImageProcessing\LocalImageRequest;
         <hr/>
 
         <div class="well">
-          <?php if (isset($_POST["submit"])): ?>
+          <?php if (isset($_POST["submitted"])): ?>
             <?php
 
             // Check we got the inputs we need
@@ -40,8 +40,9 @@ use Zara4\API\ImageProcessing\LocalImageRequest;
 
             $uploadedFilePath = $_FILES["file-to-upload"]["tmp_name"];
 
-            // You can obtain your API credentials from
-            // https://zara4.com/account/api-clients/live-credentials
+            // Replace with your API credentials
+            // You can obtain your API credentials from https://zara4.com/account/api-clients/live-credentials
+            // For the purpose of testing you can also use sandbox test credentials https://zara4.com/account/api-clients/test-credentials
             $apiClientId     = $_POST["api-client-id"];
             $apiClientSecret = $_POST["api-client-secret"];
 
@@ -56,6 +57,9 @@ use Zara4\API\ImageProcessing\LocalImageRequest;
             try {
               $originalImage  = new LocalImageRequest($uploadedFilePath);
               $processedImage = $apiClient->processImage($originalImage);
+
+              // Download compressed image
+              $apiClient->downloadProcessedImage($processedImage, "compressed.jpg");
             }
 
             // Out of quota
@@ -73,13 +77,8 @@ use Zara4\API\ImageProcessing\LocalImageRequest;
 
             // Submitted file is not an image
             catch (\Zara4\API\ImageProcessing\InvalidImageFormatException $e) {
-              die("Compression Failed - Not a recognised image format (supports jp, png, gif and svg)");
+              die("Compression Failed - Not a recognised image format (supports jpg, png, gif and svg)");
             }
-
-            // --- --- ---
-
-            // Download compressed image
-            $apiClient->downloadProcessedImage($processedImage, "compressed.jpg");
 
             ?>
 
@@ -117,10 +116,21 @@ use Zara4\API\ImageProcessing\LocalImageRequest;
           <?php else: ?>
 
             <div class="text-center">
-              <p style="margin-bottom: 20px">
+              <p>
                 You can obtain your API credentials by clicking <a target="_blank" href="https://zara4.com/account/api-clients/live-credentials">here</a>
               </p>
+              <p style="margin-bottom: 20px">
+                Alternatively you can use sandbox test API credentials - click <a target="_blank" href="https://zara4.com/account/api-clients/test-credentials">here</a>
+              </p>
             </div>
+
+            <?php
+            $defaultApiClientId = isset($_SERVER['ZARA4_API_CLIENT_ID']) && $_SERVER['ZARA4_API_CLIENT_ID']
+              ? $_SERVER['ZARA4_API_CLIENT_ID'] : "put-your-api-client-id-here";
+
+            $defaultApiClientSecret = isset($_SERVER['ZARA4_API_CLIENT_SECRET']) && $_SERVER['ZARA4_API_CLIENT_SECRET']
+              ? $_SERVER['ZARA4_API_CLIENT_SECRET'] : "put-your-api-client-secret-here";
+            ?>
 
             <form method="post" enctype="multipart/form-data" id="form">
 
@@ -129,13 +139,13 @@ use Zara4\API\ImageProcessing\LocalImageRequest;
                 <!-- API Client Id -->
                 <tr>
                   <td><label for="api-client-id">API Client Id</label></td>
-                  <td><input type="text" class="form-control" name="api-client-id" id="api-client-id" placeholder="API Client Id" /></td>
+                  <td><input type="text" class="form-control" name="api-client-id" id="api-client-id" placeholder="API Client Id" value="<?php echo $defaultApiClientId ?>" /></td>
                 </tr>
 
                 <!-- API Client Secret -->
                 <tr>
                   <td><label for="api-client-secret">API Client Secret</label></td>
-                  <td><input type="text" class="form-control" name="api-client-secret" id="api-client-secret" placeholder="API Client Secret" /></td>
+                  <td><input type="text" class="form-control" name="api-client-secret" id="api-client-secret" placeholder="API Client Secret" value="<?php echo $defaultApiClientSecret ?>" /></td>
                 </tr>
 
                 <!-- File upload -->
@@ -148,8 +158,10 @@ use Zara4\API\ImageProcessing\LocalImageRequest;
 
               </table>
 
+              <input type="hidden" name="submitted" />
+
               <div class="text-center">
-                <input class="btn btn-primary" type="submit" value="Upload and Compress Image" name="submit">
+                <input class="btn btn-primary" type="submit" value="Upload and Compress Image" id="submit-btn">
               </div>
 
             </form>
@@ -162,11 +174,11 @@ use Zara4\API\ImageProcessing\LocalImageRequest;
   </div>
 
   <script>
-    //$(function() {
-    //  $('#form').on('submit', function() {
-    //    $('#submit').attr('disabled', 'disabled');
-    //  });
-    //});
+    $(function() {
+      $('#form').on('submit', function() {
+        $('#submit-btn').attr('disabled', 'disabled');
+      });
+    });
   </script>
 
 </body>
